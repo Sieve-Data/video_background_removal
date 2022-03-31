@@ -73,8 +73,15 @@ if __name__ == '__main__':
                 frame_rate = 30
                 fourcc = cv2.VideoWriter_fourcc(*'MP4V')
                 video_writer = cv2.VideoWriter(f'{VIDEO_NAME}_out.mp4', fourcc, int(frame_rate), (int(width), int(height)))
+            
+            B, G, R, A = cv2.split(cv2_img)
+            alpha = A / 255
 
-            video_writer.write(cv2_img)
+            R = (255 * (1 - alpha) + R * alpha).astype(np.uint8)
+            G = (255 * (1 - alpha) + G * alpha).astype(np.uint8)
+            B = (255 * (1 - alpha) + B * alpha).astype(np.uint8)
+
+            video_writer.write(cv2.merge((B, G, R)))
 
         video_writer.release()
         print(f"Finished downloading background removed {VIDEO_NAME} into {VIDEO_NAME}_out.mp4")
